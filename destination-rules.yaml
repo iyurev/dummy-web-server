@@ -1,0 +1,13 @@
+---
+apiVersion: networking.istio.io/v1alpha3
+kind: DestinationRule
+metadata:
+  name: dummy-web-server
+spec:
+  host: dummy-web-server
+  subsets:
+    - name: dummy-web-server
+      labels:
+        application: dummy-web-server
+
+
