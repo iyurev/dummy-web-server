@@ -1,6 +1,6 @@
 ---
-apiVersion: apps.openshift.io/v1
-kind: DeploymentConfig
+apiVersion: apps/v1
+kind: Deployment
 metadata:
   labels:
     application: dummy-web-server
@@ -9,25 +9,18 @@ spec:
   replicas: 1
   revisionHistoryLimit: 10
   selector:
-    deploymentConfig: dummy-web-server
+    matchLabels:
+      application: dummy-web-server
   strategy:
-    activeDeadlineSeconds: 21600
-    recreateParams:
-      timeoutSeconds: 600
-    resources: {}
     type: Recreate
   template:
     metadata:
-      annotations:
-        sidecar.istio.io/inject: "true"
-      creationTimestamp: null
       labels:
         application: dummy-web-server
-        deploymentConfig: dummy-web-server
       name: dummy-web-server
     spec:
       containers:
-       -  image: quay.io/iyurev/dummy-web-server:v0.1
+       -  image: quay.io/iyurev/dummy-web-server:v0.2
           imagePullPolicy: Always
           name: dummy-web-server
           ports:
@@ -46,9 +39,6 @@ spec:
       schedulerName: default-scheduler
       securityContext: {}
       terminationGracePeriodSeconds: 60
-  test: false
-  triggers:
-    - type: ConfigChange
 
 ---
 apiVersion: v1
@@ -65,8 +55,6 @@ spec:
       protocol: TCP
       targetPort: 8080
   selector:
-    deploymentConfig: dummy-web-server
+    application: dummy-web-server
   sessionAffinity: None
   type: ClusterIP
-status:
-  loadBalancer: {}
